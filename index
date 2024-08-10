@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointage Auditeur 62244</title>
+    <LABEl><H4>Tableau de pointage</H4></LABEl>
+    
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid rgb(81, 133, 115);
+            text-align: center;
+            padding: 5px;
+            width: 7%;
+        }
+        td {
+            background-color: #756d74;
+            color: black;
+            cursor: pointer;
+        }
+        .header-row {
+            background-color: #e71212;
+        }
+        #action-buttons {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <table id="pointage-table">
+        <thead>
+            <tr>
+                <th colspan="15">POINTAGE AUDITEUR 62244</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th colspan="14">SIGLE</th>
+            </tr>
+            <tr class="header-row">
+                <th> </th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+                <th>8</th>
+                <th>9</th>
+                <th>10</th>
+                <th>11</th>
+                <th>12</th>
+                <th>13</th>
+                <th>14</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <tr>
+                <td>1</td>
+                <td>EVA</td>
+                <td>ERN</td>
+                <td>TPD</td>
+                <td>MAE</td>
+                <td>MHN</td>
+                <td>DRY</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>NIA</td>
+                <td>MER</td>
+                <td>FLC</td>
+                <td>FAN</td>
+                <td>ERN</td>
+                <td>MHN</td>
+                <td>DRY</td>
+                <td>NIA</td>
+                <td>FAN</td>
+                <td>FLR</td>
+                <td>MER</td>
+                <td></td>
+                <td>TPD</td>
+                <td>MHIR</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>HIS</td>
+                <td>FINZ</td>
+                <td></td>
+                <td></td>
+                <td>EVA</td>
+                <td></td>
+                <td>FLC</td>
+                <td>DRY</td>
+                <td></td>
+                <td></td>
+                <td>ERN</td>
+                <td></td>
+                <td>FAN</td>
+                <td></td>
+            </tr>
+            <!-- Lignes de 10 à 30 -->
+            <tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <!-- Ajouter plus de lignes ici si nécessaire -->
+        </tbody>
+    </table>
+
+    <div id="action-buttons">
+        <button onclick="removeLastRow()">Effacer la dernière ligne</button>
+        <button onclick="addLastRow()">Ajouter une ligne</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadTable();
+            makeTableEditable();
+        });
+
+        function makeTableEditable() {
+            const tableBody = document.getElementById('table-body');
+            tableBody.addEventListener('click', function(e) {
+                if (e.target.tagName === 'TD') {
+                    const currentCell = e.target;
+                    const currentValue = currentCell.innerHTML;
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentValue;
+
+                    input.addEventListener('blur', function() {
+                        currentCell.innerHTML = input.value;
+                        saveTable();
+                    });
+
+                    input.addEventListener('keydown', function(event) {
+                        if (event.key === 'Enter') {
+                            currentCell.innerHTML = input.value;
+                            saveTable();
+                        }
+                    });
+
+                    currentCell.innerHTML = '';
+                    currentCell.appendChild(input);
+                    input.focus();
+                }
+            });
+        }
+
+        function removeLastRow() {
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.getElementsByTagName('tr');
+            if (rows.length > 0) {
+                tableBody.removeChild(rows[rows.length - 1]);
+                saveTable();
+            }
+        }
+
+        function addLastRow() {
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.getElementsByTagName('tr');
+            const newRow = document.createElement('tr');
+            const newRowIndex = rows.length + 1;
+
+            let newCell = document.createElement('td');
+            newCell.innerHTML = newRowIndex;
+            newRow.appendChild(newCell);
+
+            for (let i = 1; i < 15; i++) {
+                newCell = document.createElement('td');
+                newRow.appendChild(newCell);
+            }
+
+            tableBody.appendChild(newRow);
+            saveTable();
+        }
+
+        function saveTable() {
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.getElementsByTagName('tr');
+            const data = [];
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const rowData = [];
+                for (let j = 0; j < cells.length; j++) {
+                    rowData.push(cells[j].innerHTML);
+                }
+                data.push(rowData);
+            }
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTable() {
+            const tableBody = document.getElementById('table-body');
+            const data = JSON.parse(localStorage.getItem('tableData'));
+            if (data) {
+                tableBody.innerHTML = '';
+                data.forEach(rowData => {
+                    const row = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const cell = document.createElement('td');
+                        cell.innerHTML = cellData;
+                        row.appendChild(cell);
+                    });
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        window.addEventListener('beforeunload', saveTable);
+    </script>
+
+</body>
+</html>
+
